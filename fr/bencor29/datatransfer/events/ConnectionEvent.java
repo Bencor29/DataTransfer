@@ -8,6 +8,7 @@ public class ConnectionEvent extends Event {
 	
 	public ConnectionEvent(Socket f) {
 		super(f);
+		c = false;
 	}
 	
 	public boolean isCancelled() {
