@@ -11,6 +11,10 @@ public class Utils {
 		pw.println(str);
 		pw.flush();
 	}
+	
+	public static String getAddress(Socket socket) {
+			return socket.getInetAddress().toString().split("/")[1];
+	}
 
 
 }

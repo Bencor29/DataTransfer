@@ -1,14 +1,16 @@
 package fr.bencor29.datatransfer.events;
 
-import java.net.Socket;
+import fr.bencor29.datatransfer.server.Client;
 
-public class ConnectionEvent extends Event {
+public class ConnectionEvent extends Event implements ClientEvent {
 	
 	private boolean c;
+	private Client cl;
 	
-	public ConnectionEvent(Socket f) {
-		super(f);
-		c = false;
+	public ConnectionEvent(Client c) {
+		super(c.getSocket());
+		this.c = false;
+		this.cl = c;
 	}
 	
 	public boolean isCancelled() {
@@ -17,6 +19,16 @@ public class ConnectionEvent extends Event {
 	
 	public void setCancelled(boolean cancelled) {
 		this.c = cancelled;
+	}
+
+	@Override
+	public Client getClient() {
+		return cl;
+	}
+
+	@Override
+	public int getClientID() {
+		return cl.getID();
 	}
 
 }

@@ -18,7 +18,7 @@ public abstract class Event {
 	}
 	
 	public String getAddress() {
-		return s.getInetAddress().toString().split("/")[1];
+		return Utils.getAddress(s);
 	}
 	
 	public void send(String str) throws IOException {

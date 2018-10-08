@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import fr.bencor29.datatransfer.Utils;
-import fr.bencor29.datatransfer.events.TransferEvent;
+import fr.bencor29.datatransfer.events.ServerTransferEvent;
 import fr.bencor29.datatransfer.events.listeners.TransferListener;
 
 public class Client {
@@ -17,7 +17,7 @@ public class Client {
 	private Socket socket;
 	private Thread th;
 	
-	public Client(Socket so, DTServer server) {
+	protected Client(Socket so, DTServer server) {
 		lastID++;
 		
 		this.id = lastID;
@@ -31,17 +31,26 @@ public class Client {
 				    	BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						String str = reader.readLine();
 						if(str != null) {
-							TransferEvent tev = new TransferEvent(socket, str);
+							ServerTransferEvent ste = new ServerTransferEvent(Client.this, str);
 							for(TransferListener tl : server.getListeners())
-								tl.onReceive(tev);
+								tl.onReceive(ste);
 						}
 					} catch (IOException e) {}
 			}
 		});
 	}
 	
+	protected void accept() {
+		if(!th.isAlive())
+			th.start();
+	}
+	
 	public int getID() {
 		return id;
+	}
+	
+	public String getAddress() {
+		return Utils.getAddress(socket);
 	}
 	
 	public Socket getSocket() {
@@ -51,7 +60,7 @@ public class Client {
 	public void close() {
 		try {
 			socket.close();
-		th.interrupt();
+			th.interrupt();
 		} catch (IOException e) {}
 	}
 	

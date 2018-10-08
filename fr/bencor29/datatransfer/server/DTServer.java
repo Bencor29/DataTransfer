@@ -33,12 +33,13 @@ public class DTServer extends DTMaster {
 				while(!close)
 					try {
 						Socket s = ss.accept();
-						ConnectionEvent ev = new ConnectionEvent(s);
+						Client c = new Client(s, DTServer.this);
+						ConnectionEvent ev = new ConnectionEvent(c);
 						for(ConnectionListener clis : cl)
 							clis.onConnection(ev);
 						if(!ev.isCancelled()) {
-							Client c = new Client(s, DTServer.this);
 							sts.add(c);
+							c.accept();
 						}
 					} catch (IOException e) {}
 				try {
