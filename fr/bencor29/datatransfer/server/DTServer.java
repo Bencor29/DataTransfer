@@ -1,25 +1,20 @@
-package fr.bencor29.datatransfer;
+package fr.bencor29.datatransfer.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
+import fr.bencor29.datatransfer.DTMaster;
 import fr.bencor29.datatransfer.events.ConnectionEvent;
-import fr.bencor29.datatransfer.events.TransferEvent;
 import fr.bencor29.datatransfer.events.listeners.ConnectionListener;
-import fr.bencor29.datatransfer.events.listeners.TransferListener;
 
 public class DTServer extends DTMaster {
 	
 	private ServerSocket ss;
 	private Thread t;
 	private ArrayList<ConnectionListener> cl;
-	private HashMap<Socket, Thread> sts;
+	private ArrayList<Client> sts;
 	
 	private boolean close;
 	
@@ -29,7 +24,7 @@ public class DTServer extends DTMaster {
 		ss.setSoTimeout(100);
 		
 		cl = new ArrayList<>();
-		sts = new HashMap<>();
+		sts = new ArrayList<>();
 		
 		close = false;
 		t = new Thread(new Runnable() {
@@ -42,24 +37,8 @@ public class DTServer extends DTMaster {
 						for(ConnectionListener clis : cl)
 							clis.onConnection(ev);
 						if(!ev.isCancelled()) {
-							Thread t = new Thread(new Runnable() {
-								
-								@Override
-								public void run() {
-									while(!s.isClosed())
-									    try {
-									    	BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-											String str = reader.readLine();
-											if(str != null) {
-												TransferEvent tev = new TransferEvent(s, str);
-												for(TransferListener tl : DTServer.super.getListeners())
-													tl.onReceive(tev);
-											}
-										} catch (IOException e) {}
-								}
-							});
-							sts.put(s, t);
-							t.start();
+							Client c = new Client(s, DTServer.this);
+							sts.add(c);
 						}
 					} catch (IOException e) {}
 				try {
@@ -70,13 +49,23 @@ public class DTServer extends DTMaster {
 		t.start();
 	}
 	
+	public void checkClient(Client c) {
+		if(c.getSocket().isClosed() && sts.contains(c))
+			sts.remove(c);
+		else if(!c.getSocket().isClosed() && !sts.contains(c))
+				sts.add(c);
+	}
+	
 	public void broadcast(String str) throws IOException {
-		for(Socket s : sts.keySet())
-			Utils.sendString(s, str);
+		for(Client c : sts)
+			c.sendString(str);
 	}
 	
 	public Socket[] getSockets() {
-		return (Socket[]) sts.keySet().toArray();
+		ArrayList<Socket> sockets = new ArrayList<>();
+		for(Client c : sts)
+			sockets.add(c.getSocket());
+		return (Socket[]) sockets.toArray();
 	}
 	
 	public void addListener(ConnectionListener cl) {
@@ -93,11 +82,8 @@ public class DTServer extends DTMaster {
 
 	public void stop() {
 		this.close = true;
-		for(Entry<Socket, Thread> st : sts.entrySet())
-			try {
-				st.getKey().close();
-				st.getValue().interrupt();
-			} catch (IOException e) {}
+		for(Client c : sts)
+			c.close();
 	}
 	
 	public boolean isAlive() {

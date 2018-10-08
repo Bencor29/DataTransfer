@@ -2,11 +2,11 @@ package test;
 
 import java.io.IOException;
 
-import fr.bencor29.datatransfer.DTServer;
 import fr.bencor29.datatransfer.events.ConnectionEvent;
 import fr.bencor29.datatransfer.events.TransferEvent;
 import fr.bencor29.datatransfer.events.listeners.ConnectionListener;
 import fr.bencor29.datatransfer.events.listeners.TransferListener;
+import fr.bencor29.datatransfer.server.DTServer;
 
 public class TTServer {
 	
