@@ -9,7 +9,7 @@ public abstract class DTMaster {
 	private ArrayList<TransferListener> tl;
 	
 	public DTMaster() {
-		tl = new ArrayList<>();
+		tl = new ArrayList<TransferListener>();
 	}
 	
 	/**
@@ -26,7 +26,10 @@ public abstract class DTMaster {
 	 * @return The TransferListener's list 
 	 */
 	public TransferListener[] getListeners() {
-		return (TransferListener[]) this.tl.toArray();
+		TransferListener[] listeners = new TransferListener[this.tl.size()];
+		for(int i = 0; i < this.tl.size(); i++)
+			listeners[i] = this.tl.get(i);
+		return listeners;
 	}
 	
 	/**
