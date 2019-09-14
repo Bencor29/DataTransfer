@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>fr.bencor29</groupId>
+  <artifactId>datatransfer</artifactId>
+  <version>2.3</version>
+  <packaging>jar</packaging>
+
+  <name>datatransfer</name>
+  <url>https://github.com/Bencor29/DataTransfer</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+  </dependencies>
+  
+  
+  <distributionManagement>
+    <repository>
+      <id>bencor29-datatransfer</id>
+      <url>https://raw.githubusercontent.com/Bencor29/DataTransfer/mvn</url>
+    </repository>
+  </distributionManagement>
+</project>
